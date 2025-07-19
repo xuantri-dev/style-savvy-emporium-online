@@ -52,6 +52,11 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Fashion Brand Colors
+				'rose-gold': 'hsl(var(--rose-gold))',
+				'rose-gold-muted': 'hsl(var(--rose-gold-muted))',
+				'warm-gray': 'hsl(var(--warm-gray))',
+				'warm-gray-dark': 'hsl(var(--warm-gray-dark))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
