@@ -60,6 +60,17 @@ export interface Order {
   };
 }
 
+export interface Review {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  status: 'pending' | 'approved' | 'rejected';
+}
+
 // Mock Products
 export const mockProducts: Product[] = [
   {
@@ -218,6 +229,142 @@ export const mockOrders: Order[] = [
       city: 'New York',
       country: 'USA',
       zipCode: '10001',
+    },
+  },
+  {
+    id: 'ORD-002',
+    userId: '2',
+    items: [
+      {
+        productId: '2',
+        quantity: 2,
+        size: 'S',
+        color: 'White',
+        price: 129,
+      },
+      {
+        productId: '4',
+        quantity: 1,
+        size: 'One Size',
+        color: 'Beige',
+        price: 89,
+      },
+    ],
+    total: 347,
+    status: 'processing',
+    createdAt: '2024-01-20T14:15:00Z',
+    shippingAddress: {
+      street: '456 Style Street',
+      city: 'Los Angeles',
+      country: 'USA',
+      zipCode: '90210',
+    },
+  },
+  {
+    id: 'ORD-003',
+    userId: '3',
+    items: [
+      {
+        productId: '3',
+        quantity: 1,
+        size: 'M',
+        color: 'Beige',
+        price: 349,
+      },
+    ],
+    total: 349,
+    status: 'shipped',
+    createdAt: '2024-01-18T09:45:00Z',
+    shippingAddress: {
+      street: '789 Fashion Blvd',
+      city: 'Chicago',
+      country: 'USA',
+      zipCode: '60601',
+    },
+  },
+];
+
+// Mock Reviews
+export const mockReviews: Review[] = [
+  {
+    id: 'REV-001',
+    productId: '1',
+    userId: '2',
+    userName: 'Jane Doe',
+    rating: 5,
+    comment: 'Absolutely gorgeous dress! The quality is exceptional and the fit is perfect. Received many compliments.',
+    createdAt: '2024-01-16T12:00:00Z',
+    status: 'approved',
+  },
+  {
+    id: 'REV-002',
+    productId: '2',
+    userId: '3',
+    userName: 'Sarah Miller',
+    rating: 4,
+    comment: 'Beautiful blouse, very elegant. The silk is high quality but runs a bit small.',
+    createdAt: '2024-01-10T15:30:00Z',
+    status: 'approved',
+  },
+  {
+    id: 'REV-003',
+    productId: '3',
+    userId: '4',
+    userName: 'Emma Johnson',
+    rating: 5,
+    comment: 'This coat is everything I hoped for! Perfect weight and the color is stunning.',
+    createdAt: '2024-01-12T11:20:00Z',
+    status: 'approved',
+  },
+  {
+    id: 'REV-004',
+    productId: '1',
+    userId: '5',
+    userName: 'Lisa Chen',
+    rating: 3,
+    comment: 'The dress is nice but the shipping took longer than expected.',
+    createdAt: '2024-01-14T16:45:00Z',
+    status: 'pending',
+  },
+];
+
+// Extended Mock Users
+export const extendedMockUsers: User[] = [
+  ...mockUsers,
+  {
+    id: '3',
+    email: 'sarah.miller@example.com',
+    name: 'Sarah Miller',
+    role: 'customer',
+    address: {
+      street: '456 Style Street',
+      city: 'Los Angeles',
+      country: 'USA',
+      zipCode: '90210',
+    },
+  },
+  {
+    id: '4',
+    email: 'emma.johnson@example.com',
+    name: 'Emma Johnson',
+    role: 'customer',
+    address: {
+      street: '789 Fashion Blvd',
+      city: 'Chicago',
+      country: 'USA',
+      zipCode: '60601',
+    },
+  },
+  {
+    id: '5',
+    email: 'lisa.chen@example.com',
+    name: 'Lisa Chen',
+    role: 'customer',
+    address: {
+      street: '321 Design Ave',
+      city: 'San Francisco',
+      country: 'USA',
+      zipCode: '94102',
     },
   },
 ];
