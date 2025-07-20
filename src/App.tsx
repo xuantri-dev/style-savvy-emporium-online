@@ -14,6 +14,7 @@ import Sale from "./pages/Sale";
 import Wishlist from "./pages/Wishlist";
 import Search from "./pages/Search";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import FAQ from "./pages/FAQ";
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/search" element={<Search />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/payment" element={<Payment />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/faq" element={<FAQ />} />
