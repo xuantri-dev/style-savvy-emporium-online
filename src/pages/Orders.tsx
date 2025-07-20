@@ -111,8 +111,8 @@ const Orders = () => {
                       <Button variant="outline" size="sm">
                         Track Order
                       </Button>
-                      <Button variant="outline" size="sm">
-                        View Details
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/order/${order.id}`}>View Details</Link>
                       </Button>
                     </div>
                   </div>
