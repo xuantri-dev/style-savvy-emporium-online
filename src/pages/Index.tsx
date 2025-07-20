@@ -166,6 +166,133 @@ const Index = () => {
         </div>
       </section>
 
+      {/* New Arrivals */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="section-heading mb-4">New Arrivals</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Fresh styles just landed. Be the first to discover our latest pieces
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {saleProducts.slice(0, 4).map((product) => (
+            <Link key={product.id} to={`/product/${product.id}`} className="product-card">
+              <Card className="border-0 shadow-none">
+                <CardContent className="p-0">
+                  <div className="relative overflow-hidden rounded-lg">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="product-image"
+                    />
+                    <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">
+                      New
+                    </Badge>
+                  </div>
+                  <div className="pt-3">
+                    <h3 className="font-medium text-sm mb-1 truncate">{product.name}</h3>
+                    <span className="price-text text-sm">${product.price}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="section-heading mb-4">What Our Customers Say</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Real stories from real customers who love our fashion
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Sarah Johnson",
+                role: "Fashion Enthusiast",
+                text: "The quality is absolutely incredible. Every piece I've bought has become a staple in my wardrobe.",
+                rating: 5
+              },
+              {
+                name: "Emma Chen",
+                role: "Professional",
+                text: "Perfect for my professional wardrobe. The attention to detail and fit is unmatched.",
+                rating: 5
+              },
+              {
+                name: "Maria Rodriguez",
+                role: "Style Blogger",
+                text: "I consistently find unique pieces here that I can't get anywhere else. Love the curated selection!",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <Card key={index} className="p-6 border-0 shadow-sm">
+                <CardContent className="p-0">
+                  <div className="flex items-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-rose-gold text-rose-gold" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground mb-4 italic">"{testimonial.text}"</p>
+                  <div>
+                    <p className="font-medium">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Brand Values */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="section-heading mb-4">Our Promise</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Built on values that matter to you and to the world
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Star className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-light tracking-wide mb-4">PREMIUM QUALITY</h3>
+            <p className="text-muted-foreground">
+              Every piece is carefully crafted with the finest materials and attention to detail
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ArrowRight className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-light tracking-wide mb-4">SUSTAINABLE FASHION</h3>
+            <p className="text-muted-foreground">
+              Committed to ethical practices and environmental responsibility in every step
+            </p>
+          </div>
+
+          <div className="text-center">
+            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Star className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-light tracking-wide mb-4">TIMELESS DESIGN</h3>
+            <p className="text-muted-foreground">
+              Classic pieces that transcend trends and remain elegant season after season
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted">
         <div className="max-w-4xl mx-auto text-center">
