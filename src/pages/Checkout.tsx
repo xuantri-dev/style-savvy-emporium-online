@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck } from 'lucide-react';
+import { Truck, CreditCard, Banknote, Truck as TruckIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import Layout from '@/components/Layout';
 import { mockProducts } from '@/data/mockData';
@@ -36,8 +37,18 @@ const Checkout = () => {
     zipCode: '',
   });
 
+  const [paymentMethod, setPaymentMethod] = useState('');
+
   const handleContinueToPayment = () => {
-    navigate('/payment');
+    if (!paymentMethod) {
+      toast({
+        title: 'Please select a payment method',
+        description: 'You must choose a payment method before continuing.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    navigate('/payment', { state: { paymentMethod, shippingInfo, cartItems, total } });
   };
 
   return (
@@ -129,8 +140,54 @@ const Checkout = () => {
                     </SelectContent>
                   </Select>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Method Selection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Payment Method
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="card" id="card" />
+                    <Label htmlFor="card" className="flex items-center gap-3 cursor-pointer flex-1">
+                      <CreditCard className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <div className="font-medium">Credit/Debit Card</div>
+                        <div className="text-sm text-muted-foreground">Pay securely with your card</div>
+                      </div>
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="bank" id="bank" />
+                    <Label htmlFor="bank" className="flex items-center gap-3 cursor-pointer flex-1">
+                      <Banknote className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <div className="font-medium">Bank Transfer</div>
+                        <div className="text-sm text-muted-foreground">Direct transfer from your bank account</div>
+                      </div>
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="cod" id="cod" />
+                    <Label htmlFor="cod" className="flex items-center gap-3 cursor-pointer flex-1">
+                      <TruckIcon className="h-5 w-5 text-muted-foreground" />
+                      <div>
+                        <div className="font-medium">Cash on Delivery</div>
+                        <div className="text-sm text-muted-foreground">Pay when your order arrives</div>
+                      </div>
+                    </Label>
+                  </div>
+                </RadioGroup>
                 
-                <Button onClick={handleContinueToPayment} className="w-full">
+                <Button onClick={handleContinueToPayment} className="w-full mt-6">
                   Continue to Payment
                 </Button>
               </CardContent>
