@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Layout from '@/components/Layout';
-import { getProductById } from '@/data/mockData';
+import { getProductById, getProductsByCategory } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 
 const ProductDetail = () => {
@@ -290,6 +290,61 @@ const ProductDetail = () => {
               </div>
             </TabsContent>
           </Tabs>
+        </div>
+
+        {/* Related Products */}
+        <div className="mt-16">
+          <h2 className="text-2xl font-light tracking-wide mb-8">You May Also Like</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {getProductsByCategory(product.category)
+              .filter(relatedProduct => relatedProduct.id !== product.id)
+              .slice(0, 4)
+              .map((relatedProduct) => (
+                <Link
+                  key={relatedProduct.id}
+                  to={`/product/${relatedProduct.id}`}
+                  className="group"
+                >
+                  <div className="aspect-[3/4] overflow-hidden rounded-lg mb-4">
+                    <img
+                      src={relatedProduct.images[0]}
+                      alt={relatedProduct.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-medium group-hover:text-rose-gold transition-colors">
+                      {relatedProduct.name}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">${relatedProduct.price}</span>
+                      {relatedProduct.originalPrice && (
+                        <span className="text-sm text-muted-foreground line-through">
+                          ${relatedProduct.originalPrice}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-3 w-3 ${
+                              i < Math.floor(relatedProduct.rating) 
+                                ? 'fill-rose-gold text-rose-gold' 
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        ({relatedProduct.reviews})
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+          </div>
         </div>
       </div>
     </Layout>
