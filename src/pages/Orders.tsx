@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import { mockOrders, mockProducts } from '@/data/mockData';
 
 const Orders = () => {
-  const orders = mockOrders;
+  const [currentPage, setCurrentPage] = useState(1);
+  const ORDERS_PER_PAGE = 5;
+  
+  const { paginatedOrders, totalPages } = useMemo(() => {
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+    const paginatedOrders = mockOrders.slice(startIndex, startIndex + ORDERS_PER_PAGE);
+    const totalPages = Math.ceil(mockOrders.length / ORDERS_PER_PAGE);
+    
+    return {
+      paginatedOrders,
+      totalPages
+    };
+  }, [currentPage]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -34,7 +47,7 @@ const Orders = () => {
     }
   };
 
-  if (orders.length === 0) {
+  if (mockOrders.length === 0) {
     return (
       <Layout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -56,10 +69,15 @@ const Orders = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-light tracking-wide mb-8">My Orders</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-light tracking-wide">My Orders</h1>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages} • {mockOrders.length} orders total
+          </span>
+        </div>
 
         <div className="space-y-6">
-          {orders.map((order) => (
+          {paginatedOrders.map((order) => (
             <Card key={order.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -121,6 +139,44 @@ const Orders = () => {
             </Card>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-12">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={page === currentPage}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </Layout>
   );

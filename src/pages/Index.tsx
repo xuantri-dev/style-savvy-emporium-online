@@ -4,6 +4,7 @@ import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Layout from '@/components/Layout';
 import { getFeaturedProducts, getSaleProducts } from '@/data/mockData';
 import heroImage from '@/assets/hero-fashion.jpg';
@@ -15,40 +16,74 @@ const Index = () => {
   const featuredProducts = getFeaturedProducts();
   const saleProducts = getSaleProducts();
 
+  const bannerSlides = [
+    {
+      image: heroImage,
+      title: "SOPHISTICATED FASHION",
+      subtitle: "Discover timeless elegance with our curated collection of premium fashion pieces",
+      primaryButton: { text: "Explore Collection", link: "/shop" },
+      secondaryButton: { text: "Shop Sale", link: "/sale" }
+    },
+    {
+      image: productDress,
+      title: "NEW ARRIVALS",
+      subtitle: "Fresh styles just landed. Be the first to discover our latest pieces",
+      primaryButton: { text: "Shop New", link: "/shop" },
+      secondaryButton: { text: "View All", link: "/shop" }
+    },
+    {
+      image: productCoat,
+      title: "WINTER COLLECTION",
+      subtitle: "Stay warm and stylish with our premium outerwear collection",
+      primaryButton: { text: "Shop Outerwear", link: "/shop?category=outerwear" },
+      secondaryButton: { text: "Learn More", link: "/about" }
+    }
+  ];
+
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        >
-          <div className="absolute inset-0 bg-black/20"></div>
-        </div>
-        
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="brand-heading mb-6 fade-in-up">
-            SOPHISTICATED
-            <br />
-            FASHION
-          </h1>
-          <p className="text-xl md:text-2xl font-light tracking-wide mb-8 max-w-2xl mx-auto">
-            Discover timeless elegance with our curated collection of premium fashion pieces
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="btn-minimal bg-white text-black hover:bg-white/90">
-              <Link to="/shop">
-                Explore Collection
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black">
-              <Link to="/sale">
-                Shop Sale
-              </Link>
-            </Button>
-          </div>
-        </div>
+      {/* Hero Slider Section */}
+      <section className="relative h-screen overflow-hidden">
+        <Carousel className="w-full h-full">
+          <CarouselContent>
+            {bannerSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-screen flex items-center justify-center">
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: `url(${slide.image})` }}
+                  >
+                    <div className="absolute inset-0 bg-black/30"></div>
+                  </div>
+                  
+                  <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
+                    <h1 className="brand-heading mb-6 fade-in-up">
+                      {slide.title}
+                    </h1>
+                    <p className="text-xl md:text-2xl font-light tracking-wide mb-8 max-w-2xl mx-auto">
+                      {slide.subtitle}
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Button asChild size="lg" className="btn-minimal bg-white text-black hover:bg-white/90">
+                        <Link to={slide.primaryButton.link}>
+                          {slide.primaryButton.text}
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black">
+                        <Link to={slide.secondaryButton.link}>
+                          {slide.secondaryButton.text}
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="left-8 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+          <CarouselNext className="right-8 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+        </Carousel>
       </section>
 
       {/* Featured Products */}

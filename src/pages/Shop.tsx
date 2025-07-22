@@ -5,18 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import { mockProducts, mockCategories } from '@/data/mockData';
 
 const Shop = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [priceRange, setPriceRange] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
   
   const categoryFilter = searchParams.get('category');
+  const PRODUCTS_PER_PAGE = 9;
   
-  const filteredProducts = useMemo(() => {
+  const { filteredProducts, paginatedProducts, totalPages } = useMemo(() => {
     let products = [...mockProducts];
     
     // Filter by category
@@ -51,8 +54,17 @@ const Shop = () => {
         products.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     
-    return products;
-  }, [categoryFilter, sortBy, priceRange]);
+    // Pagination
+    const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const paginatedProducts = products.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+    
+    return {
+      filteredProducts: products,
+      paginatedProducts,
+      totalPages
+    };
+  }, [categoryFilter, sortBy, priceRange, currentPage]);
 
   const currentCategory = categoryFilter 
     ? mockCategories.find(cat => cat.id === categoryFilter) 
@@ -127,7 +139,7 @@ const Shop = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-muted-foreground">
-                  {filteredProducts.length} products found
+                  {filteredProducts.length} products found • Page {currentPage} of {totalPages}
                 </span>
               </div>
               
@@ -172,7 +184,7 @@ const Shop = () => {
                 ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
                 : 'space-y-6'
             }>
-              {filteredProducts.map((product) => (
+              {paginatedProducts.map((product) => (
                 <Link key={product.id} to={`/product/${product.id}`} className="product-card">
                   <Card className="border-0 shadow-none">
                     <CardContent className="p-0">
@@ -268,6 +280,44 @@ const Shop = () => {
             {filteredProducts.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No products found matching your criteria.</p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    
+                    {[...Array(totalPages)].map((_, index) => {
+                      const page = index + 1;
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={page === currentPage}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             )}
           </div>
