@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Layout from '@/components/Layout';
+import ProductCard from '@/components/ProductCard';
 import { getFeaturedProducts, getSaleProducts } from '@/data/mockData';
 import heroImage from '@/assets/hero-fashion.jpg';
 import productDress from '@/assets/product-dress-1.jpg';
@@ -95,45 +96,9 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {featuredProducts.map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} className="product-card">
-              <Card className="border-0 shadow-none">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-lg">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="product-image"
-                    />
-                    {product.onSale && (
-                      <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                        Sale
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="pt-4">
-                    <h3 className="product-title mb-2">{product.name}</h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 fill-rose-gold text-rose-gold" />
-                        <span className="text-sm text-muted-foreground ml-1">
-                          {product.rating} ({product.reviews})
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="price-text">${product.price}</span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through">
-                          ${product.originalPrice}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
@@ -212,26 +177,7 @@ const Index = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {saleProducts.slice(0, 4).map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`} className="product-card">
-              <Card className="border-0 shadow-none">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-lg">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="product-image"
-                    />
-                    <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">
-                      New
-                    </Badge>
-                  </div>
-                  <div className="pt-3">
-                    <h3 className="font-medium text-sm mb-1 truncate">{product.name}</h3>
-                    <span className="price-text text-sm">${product.price}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>

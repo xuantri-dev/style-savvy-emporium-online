@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
+import ProductCard from '@/components/ProductCard';
 import { mockProducts } from '@/data/mockData';
 
 const Search = () => {
@@ -106,40 +107,13 @@ const Search = () => {
             </div>
 
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {searchResults.map((product) => (
-                  <Link key={product.id} to={`/product/${product.id}`} className="product-card">
-                    <Card className="border-0 shadow-none">
-                      <CardContent className="p-0">
-                        <div className="relative overflow-hidden rounded-lg">
-                          <img
-                            src={product.images[0]}
-                            alt={product.name}
-                            className="product-image"
-                          />
-                          {product.onSale && (
-                            <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                              Sale
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="pt-4">
-                          <h3 className="product-title mb-2">{product.name}</h3>
-                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                            {product.description}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="price-text">${product.price}</span>
-                            {product.originalPrice && (
-                              <span className="text-sm text-muted-foreground line-through">
-                                ${product.originalPrice}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    showDescription={true}
+                  />
                 ))}
               </div>
             ) : (

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
+import ProductCard from '@/components/ProductCard';
 import { mockProducts, mockCategories } from '@/data/mockData';
 
 const Shop = () => {
@@ -181,99 +182,16 @@ const Shop = () => {
             {/* Products Grid */}
             <div className={
               viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'
                 : 'space-y-6'
             }>
               {paginatedProducts.map((product) => (
-                <Link key={product.id} to={`/product/${product.id}`} className="product-card">
-                  <Card className="border-0 shadow-none">
-                    <CardContent className="p-0">
-                      {viewMode === 'grid' ? (
-                        <>
-                          <div className="relative overflow-hidden rounded-lg">
-                            <img
-                              src={product.images[0]}
-                              alt={product.name}
-                              className="product-image"
-                            />
-                            {product.onSale && (
-                              <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">
-                                Sale
-                              </Badge>
-                            )}
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              className="absolute top-4 right-4 bg-white/80 hover:bg-white"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                // Add to wishlist logic
-                              }}
-                            >
-                              <Heart className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <div className="pt-4">
-                            <h3 className="product-title mb-2">{product.name}</h3>
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 fill-rose-gold text-rose-gold" />
-                                <span className="text-sm text-muted-foreground ml-1">
-                                  {product.rating} ({product.reviews})
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="price-text">${product.price}</span>
-                              {product.originalPrice && (
-                                <span className="text-sm text-muted-foreground line-through">
-                                  ${product.originalPrice}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex gap-4">
-                          <div className="relative w-48 h-64 overflow-hidden rounded-lg">
-                            <img
-                              src={product.images[0]}
-                              alt={product.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1 py-2">
-                            <h3 className="product-title mb-2">{product.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                              {product.description}
-                            </p>
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 fill-rose-gold text-rose-gold" />
-                                <span className="text-sm text-muted-foreground ml-1">
-                                  {product.rating} ({product.reviews})
-                                </span>
-                              </div>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="price-text">${product.price}</span>
-                                {product.originalPrice && (
-                                  <span className="text-sm text-muted-foreground line-through">
-                                    ${product.originalPrice}
-                                  </span>
-                                )}
-                              </div>
-                              <Button variant="outline" size="sm">
-                                View Details
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Link>
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  viewMode={viewMode}
+                  showDescription={viewMode === 'list'}
+                />
               ))}
             </div>
 
