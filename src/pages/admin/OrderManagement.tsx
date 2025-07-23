@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Eye, Edit, Truck, Package, CheckCircle, XCircle, Search, Filter } from 'lucide-react';
+import { Eye, Edit, Truck, Package, CheckCircle, XCircle, Search, Filter, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import AdminLayout from '@/components/AdminLayout';
 import { mockOrders, extendedMockUsers, getProductById } from '@/data/mockData';
 
@@ -13,6 +15,21 @@ const OrderManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [orders] = useState(mockOrders);
+  const [modalState, setModalState] = useState({ 
+    type: '', 
+    isOpen: false, 
+    orderId: null as string | null 
+  });
+
+  const selectedOrder = modalState.orderId ? orders.find(o => o.id === modalState.orderId) : null;
+
+  const openModal = (type: string, orderId?: string) => {
+    setModalState({ type, isOpen: true, orderId: orderId || null });
+  };
+
+  const closeModal = () => {
+    setModalState({ type: '', isOpen: false, orderId: null });
+  };
 
   const getUser = (userId: string) => extendedMockUsers.find(user => user.id === userId);
 
@@ -161,11 +178,14 @@ const OrderManagement = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => openModal('view', order.id)}>
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => openModal('edit', order.id)}>
                             <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => openModal('delete', order.id)}>
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -176,6 +196,159 @@ const OrderManagement = () => {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Order Modals */}
+        <Dialog open={modalState.isOpen} onOpenChange={closeModal}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>
+                {modalState.type === 'view' && 'Order Details'}
+                {modalState.type === 'edit' && 'Edit Order'}
+                {modalState.type === 'delete' && 'Delete Order'}
+              </DialogTitle>
+              <DialogDescription>
+                {modalState.type === 'view' && 'View complete order information and details.'}
+                {modalState.type === 'edit' && 'Update order status and information.'}
+                {modalState.type === 'delete' && 'This action cannot be undone. This will permanently delete the order.'}
+              </DialogDescription>
+            </DialogHeader>
+
+            {modalState.type === 'delete' && selectedOrder ? (
+              <div className="py-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Are you sure you want to delete order "{selectedOrder.id}"?
+                </p>
+                <div className="p-4 border rounded-lg space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Order ID:</span>
+                    <span className="text-sm text-muted-foreground">{selectedOrder.id}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Total:</span>
+                    <span className="text-sm text-muted-foreground">${selectedOrder.total}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Status:</span>
+                    <Badge variant={getStatusColor(selectedOrder.status)}>
+                      {selectedOrder.status}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            ) : modalState.type === 'view' && selectedOrder ? (
+              <div className="py-4 space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Order ID</Label>
+                      <p className="text-sm text-muted-foreground">{selectedOrder.id}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Customer</Label>
+                      <p className="text-sm text-muted-foreground">{getUser(selectedOrder.userId)?.name}</p>
+                      <p className="text-xs text-muted-foreground">{getUser(selectedOrder.userId)?.email}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Order Date</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(selectedOrder.createdAt).toLocaleDateString()} at {new Date(selectedOrder.createdAt).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Status</Label>
+                      <Badge variant={getStatusColor(selectedOrder.status)} className="flex items-center gap-1 w-fit">
+                        {getStatusIcon(selectedOrder.status)}
+                        {selectedOrder.status}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium">Total Amount</Label>
+                      <p className="text-lg font-semibold">${selectedOrder.total}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Items Count</Label>
+                      <p className="text-sm text-muted-foreground">{selectedOrder.items.length} items</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Shipping Address</Label>
+                      <div className="text-sm text-muted-foreground">
+                        <p>{selectedOrder.shippingAddress.street}</p>
+                        <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.zipCode}</p>
+                        <p>{selectedOrder.shippingAddress.country}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Order Items</Label>
+                  <div className="mt-2 space-y-2">
+                    {selectedOrder.items.map((item, index) => {
+                      const product = getProductById(item.productId);
+                      return (
+                        <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+                          {product && (
+                            <img
+                              src={product.images[0]}
+                              alt={product.name}
+                              className="w-12 h-12 object-cover rounded-md"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <p className="font-medium">{product?.name || 'Unknown Product'}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Quantity: {item.quantity} × ${item.price} = ${item.quantity * item.price}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : modalState.type === 'edit' && selectedOrder ? (
+              <div className="py-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="orderStatus">Order Status</Label>
+                    <Select defaultValue={selectedOrder.status}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="totalAmount">Total Amount</Label>
+                    <Input id="totalAmount" type="number" defaultValue={selectedOrder.total} />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="trackingNumber">Tracking Number</Label>
+                  <Input id="trackingNumber" placeholder="Enter tracking number" />
+                </div>
+              </div>
+            ) : null}
+
+            <DialogFooter>
+              <Button variant="outline" onClick={closeModal}>
+                Cancel
+              </Button>
+              {modalState.type === 'delete' ? (
+                <Button variant="destructive">Delete Order</Button>
+              ) : modalState.type === 'edit' ? (
+                <Button>Save Changes</Button>
+              ) : null}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
