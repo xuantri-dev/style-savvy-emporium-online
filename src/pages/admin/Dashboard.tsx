@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart3, Users, Package, ShoppingCart, TrendingUp, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Layout from '@/components/Layout';
+import AdminLayout from '@/components/AdminLayout';
 import { mockProducts, mockOrders, extendedMockUsers, mockReviews } from '@/data/mockData';
 
 const AdminDashboard = () => {
@@ -11,7 +11,7 @@ const AdminDashboard = () => {
   const averageRating = mockReviews.reduce((sum, review) => sum + review.rating, 0) / mockReviews.length;
 
   return (
-    <Layout>
+    <AdminLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-light tracking-wide mb-8">Admin Dashboard</h1>
         
@@ -155,7 +155,7 @@ const AdminDashboard = () => {
           </Card>
         </div>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 

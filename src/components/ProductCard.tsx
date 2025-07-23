@@ -58,18 +58,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="bg-white/80 hover:bg-white h-8 w-8"
+                    className="bg-white/90 hover:bg-white h-8 w-8 border border-gray-200 shadow-sm"
                     onClick={handleFavoriteClick}
                   >
-                    <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+                    <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
                   </Button>
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    className="bg-white/80 hover:bg-white h-8 w-8"
+                    className="bg-white/90 hover:bg-white h-8 w-8 border border-gray-200 shadow-sm"
                     onClick={handleWishlistClick}
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-4 w-4 text-gray-600" />
                   </Button>
                 </div>
               </div>
@@ -130,18 +130,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="bg-white/80 hover:bg-white"
+                className="bg-white/90 hover:bg-white border border-gray-200 shadow-sm"
                 onClick={handleFavoriteClick}
               >
-                <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+                <Heart className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
               </Button>
               <Button 
                 variant="ghost" 
                 size="icon"
-                className="bg-white/80 hover:bg-white"
+                className="bg-white/90 hover:bg-white border border-gray-200 shadow-sm"
                 onClick={handleWishlistClick}
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-4 w-4 text-gray-600" />
               </Button>
             </div>
           </div>

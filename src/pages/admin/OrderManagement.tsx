@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Layout from '@/components/Layout';
+import AdminLayout from '@/components/AdminLayout';
 import { mockOrders, extendedMockUsers, getProductById } from '@/data/mockData';
 
 const OrderManagement = () => {
@@ -47,7 +47,7 @@ const OrderManagement = () => {
   };
 
   return (
-    <Layout>
+    <AdminLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-light tracking-wide">Order Management</h1>
@@ -177,7 +177,7 @@ const OrderManagement = () => {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </AdminLayout>
   );
 };
 
