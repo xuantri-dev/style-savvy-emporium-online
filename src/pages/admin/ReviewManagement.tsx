@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import AdminLayout from '@/components/AdminLayout';
 import { mockReviews, getProductById } from '@/data/mockData';
 
@@ -14,6 +17,23 @@ const ReviewManagement = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState('all');
   const [reviews] = useState(mockReviews);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [modalState, setModalState] = useState({ 
+    type: '', 
+    isOpen: false, 
+    reviewId: null as string | null 
+  });
+
+  const selectedReview = modalState.reviewId ? reviews.find(r => r.id === modalState.reviewId) : null;
+
+  const openModal = (type: string, reviewId?: string) => {
+    setModalState({ type, isOpen: true, reviewId: reviewId || null });
+  };
+
+  const closeModal = () => {
+    setModalState({ type: '', isOpen: false, reviewId: null });
+  };
 
   const filteredReviews = reviews.filter(review => {
     const product = getProductById(review.productId);
@@ -24,6 +44,10 @@ const ReviewManagement = () => {
     const matchesRating = ratingFilter === 'all' || review.rating.toString() === ratingFilter;
     return matchesSearch && matchesStatus && matchesRating;
   });
+
+  const totalPages = Math.ceil(filteredReviews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentReviews = filteredReviews.slice(startIndex, startIndex + itemsPerPage);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -145,7 +169,7 @@ const ReviewManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredReviews.map((review) => {
+                {currentReviews.map((review) => {
                   const product = getProductById(review.productId);
                   return (
                     <TableRow key={review.id}>
@@ -197,7 +221,7 @@ const ReviewManagement = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => openModal('view', review.id)}>
                             <Eye className="h-4 w-4" />
                           </Button>
                           {review.status === 'pending' && (
@@ -220,8 +244,123 @@ const ReviewManagement = () => {
                 })}
               </TableBody>
             </Table>
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <PaginationItem key={i + 1}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === i + 1}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(i + 1);
+                          }}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Review Details Modal */}
+        <Dialog open={modalState.isOpen} onOpenChange={closeModal}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Review Details</DialogTitle>
+              <DialogDescription>
+                View detailed review information and customer feedback.
+              </DialogDescription>
+            </DialogHeader>
+
+            {selectedReview && (
+              <div className="py-4 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Customer</Label>
+                    <p className="text-sm text-muted-foreground">{selectedReview.userName}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Product</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {getProductById(selectedReview.productId)?.name || 'Unknown Product'}
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Rating</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      {renderStars(selectedReview.rating)}
+                      <span className="text-sm font-medium">{selectedReview.rating}/5</span>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Status</Label>
+                    <div className="mt-1">
+                      <Badge variant={getStatusColor(selectedReview.status)} className="flex items-center gap-1 w-fit">
+                        {getStatusIcon(selectedReview.status)}
+                        {selectedReview.status}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Review Comment</Label>
+                  <div className="mt-1 p-3 bg-muted/50 rounded-lg">
+                    <p className="text-sm">{selectedReview.comment}</p>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Date Submitted</Label>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(selectedReview.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button variant="outline" onClick={closeModal}>
+                Close
+              </Button>
+              {selectedReview?.status === 'pending' && (
+                <>
+                  <Button variant="default" className="text-green-600">
+                    Approve Review
+                  </Button>
+                  <Button variant="destructive">
+                    Reject Review
+                  </Button>
+                </>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

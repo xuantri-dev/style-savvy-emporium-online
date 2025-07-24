@@ -15,6 +15,8 @@ const OrderManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [orders] = useState(mockOrders);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [modalState, setModalState] = useState({ 
     type: '', 
     isOpen: false, 
@@ -31,10 +33,10 @@ const OrderManagement = () => {
     setModalState({ type: '', isOpen: false, orderId: null });
   };
 
-  const getUser = (userId: string) => extendedMockUsers.find(user => user.id === userId);
+  const getUserById = (userId: string) => extendedMockUsers.find(user => user.id === userId);
 
   const filteredOrders = orders.filter(order => {
-    const user = getUser(order.userId);
+    const user = getUserById(order.userId);
     const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user?.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -124,13 +126,14 @@ const OrderManagement = () => {
                   <TableHead>Items</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Cancellation</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.map((order) => {
-                  const user = getUser(order.userId);
+                {currentOrders.map((order) => {
+                  const user = getUserById(order.userId);
                   return (
                     <TableRow key={order.id}>
                       <TableCell>
@@ -163,11 +166,21 @@ const OrderManagement = () => {
                         <span className="font-medium">${order.total}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getStatusColor(order.status)} className="flex items-center gap-1 w-fit">
-                          {getStatusIcon(order.status)}
-                          {order.status}
-                        </Badge>
-                      </TableCell>
+                      <Badge variant={getStatusColor(order.status)} className="flex items-center gap-1 w-fit">
+                        {getStatusIcon(order.status)}
+                        {order.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {order.cancellationReason ? (
+                        <div className="text-sm">
+                          <span className="text-red-600 font-medium">Cancelled</span>
+                          <p className="text-muted-foreground text-xs mt-1">{order.cancellationReason}</p>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <p>{new Date(order.createdAt).toLocaleDateString()}</p>
@@ -176,24 +189,66 @@ const OrderManagement = () => {
                           </p>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => openModal('view', order.id)}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => openModal('view', order.id)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        {order.status !== 'cancelled' && order.status !== 'delivered' && (
                           <Button variant="ghost" size="sm" onClick={() => openModal('edit', order.id)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => openModal('delete', order.id)}>
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => openModal('delete', order.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <PaginationItem key={i + 1}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === i + 1}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(i + 1);
+                          }}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -245,8 +300,8 @@ const OrderManagement = () => {
                     </div>
                     <div>
                       <Label className="text-sm font-medium">Customer</Label>
-                      <p className="text-sm text-muted-foreground">{getUser(selectedOrder.userId)?.name}</p>
-                      <p className="text-xs text-muted-foreground">{getUser(selectedOrder.userId)?.email}</p>
+                      <p className="text-sm text-muted-foreground">{getUserById(selectedOrder.userId)?.name}</p>
+                      <p className="text-xs text-muted-foreground">{getUserById(selectedOrder.userId)?.email}</p>
                     </div>
                     <div>
                       <Label className="text-sm font-medium">Order Date</Label>

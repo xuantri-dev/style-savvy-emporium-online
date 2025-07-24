@@ -9,12 +9,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import AdminLayout from '@/components/AdminLayout';
 import { mockProducts } from '@/data/mockData';
 
 const ProductManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [products] = useState(mockProducts);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [modalState, setModalState] = useState({ 
     type: '', 
     isOpen: false, 
@@ -35,6 +38,10 @@ const ProductManagement = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <AdminLayout>
@@ -76,13 +83,14 @@ const ProductManagement = () => {
                   <TableHead>Category</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
+                  <TableHead>Visibility</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredProducts.map((product) => (
+                {currentProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -109,8 +117,18 @@ const ProductManagement = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={product.inStock ? 'default' : 'destructive'}>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                      <div className="flex flex-col gap-1">
+                        <Badge variant={product.inStock ? 'default' : 'destructive'}>
+                          {product.inStock ? 'In Stock' : 'Out of Stock'}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                          {product.stockCount} units
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.visible ? 'default' : 'secondary'}>
+                        {product.visible ? 'Visible' : 'Hidden'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -146,6 +164,46 @@ const ProductManagement = () => {
                 ))}
               </TableBody>
             </Table>
+            {totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage > 1) setCurrentPage(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <PaginationItem key={i + 1}>
+                        <PaginationLink
+                          href="#"
+                          isActive={currentPage === i + 1}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(i + 1);
+                          }}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
           </CardContent>
         </Card>
 

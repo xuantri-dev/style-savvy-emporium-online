@@ -11,6 +11,8 @@ export interface Product {
   sizes: string[];
   colors: string[];
   inStock: boolean;
+  stockCount: number;
+  visible: boolean;
   featured: boolean;
   onSale: boolean;
   rating: number;
@@ -23,6 +25,7 @@ export interface Category {
   description: string;
   image: string;
   productCount: number;
+  visible: boolean;
 }
 
 export interface User {
@@ -31,6 +34,7 @@ export interface User {
   name: string;
   avatar?: string;
   role: 'customer' | 'admin';
+  status: 'active' | 'inactive' | 'suspended' | 'pending';
   address?: {
     street: string;
     city: string;
@@ -51,6 +55,7 @@ export interface Order {
   }[];
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  cancellationReason?: string;
   createdAt: string;
   shippingAddress: {
     street: string;
@@ -84,6 +89,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy'],
     inStock: true,
+    stockCount: 25,
+    visible: true,
     featured: true,
     onSale: true,
     rating: 4.8,
@@ -99,6 +106,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['White', 'Cream'],
     inStock: true,
+    stockCount: 15,
+    visible: true,
     featured: true,
     onSale: false,
     rating: 4.6,
@@ -114,12 +123,13 @@ export const mockProducts: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Beige', 'Camel', 'Black'],
     inStock: true,
+    stockCount: 8,
+    visible: true,
     featured: true,
     onSale: false,
     rating: 4.9,
     reviews: 67,
   },
-  // Add more products for variety
   {
     id: '4',
     name: 'Minimalist Silk Scarf',
@@ -130,6 +140,8 @@ export const mockProducts: Product[] = [
     sizes: ['One Size'],
     colors: ['Beige', 'Black', 'Navy'],
     inStock: true,
+    stockCount: 42,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.7,
@@ -146,12 +158,13 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Charcoal'],
     inStock: true,
+    stockCount: 12,
+    visible: true,
     featured: false,
     onSale: true,
     rating: 4.5,
     reviews: 156,
   },
-  // Additional products for each category
   {
     id: '6',
     name: 'Summer Floral Dress',
@@ -162,6 +175,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Floral', 'White'],
     inStock: true,
+    stockCount: 18,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.4,
@@ -178,6 +193,8 @@ export const mockProducts: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Navy', 'Burgundy'],
     inStock: true,
+    stockCount: 6,
+    visible: true,
     featured: true,
     onSale: true,
     rating: 4.7,
@@ -193,6 +210,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['White', 'Blue', 'Pink'],
     inStock: true,
+    stockCount: 35,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.3,
@@ -208,6 +227,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Nude', 'Black', 'White'],
     inStock: true,
+    stockCount: 22,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.6,
@@ -223,6 +244,8 @@ export const mockProducts: Product[] = [
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Black', 'Grey', 'Navy'],
     inStock: true,
+    stockCount: 4,
+    visible: true,
     featured: true,
     onSale: false,
     rating: 4.8,
@@ -239,6 +262,8 @@ export const mockProducts: Product[] = [
     sizes: ['One Size'],
     colors: ['Black', 'Brown', 'Tan'],
     inStock: true,
+    stockCount: 14,
+    visible: true,
     featured: false,
     onSale: true,
     rating: 4.5,
@@ -254,12 +279,13 @@ export const mockProducts: Product[] = [
     sizes: ['One Size'],
     colors: ['Gold', 'Silver', 'Rose Gold'],
     inStock: true,
+    stockCount: 67,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.4,
     reviews: 23,
   },
-  // Additional products for Search page
   {
     id: '13',
     name: 'Vintage Denim Jacket',
@@ -270,7 +296,9 @@ export const mockProducts: Product[] = [
     category: 'outerwear',
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Blue', 'Black', 'White'],
-    inStock: true,
+    inStock: false,
+    stockCount: 0,
+    visible: true,
     featured: false,
     onSale: true,
     rating: 4.2,
@@ -286,6 +314,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L'],
     colors: ['Black', 'Navy', 'Burgundy'],
     inStock: true,
+    stockCount: 28,
+    visible: true,
     featured: false,
     onSale: false,
     rating: 4.6,
@@ -301,6 +331,8 @@ export const mockProducts: Product[] = [
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
     colors: ['Cream', 'Grey', 'Navy'],
     inStock: true,
+    stockCount: 9,
+    visible: true,
     featured: true,
     onSale: false,
     rating: 4.9,
@@ -317,6 +349,8 @@ export const mockProducts: Product[] = [
     sizes: ['6', '7', '8', '9', '10'],
     colors: ['Black', 'Brown', 'Tan'],
     inStock: true,
+    stockCount: 31,
+    visible: false,
     featured: false,
     onSale: true,
     rating: 4.7,
@@ -332,6 +366,7 @@ export const mockCategories: Category[] = [
     description: 'Elegant dresses for every occasion',
     image: '/src/assets/product-dress-1.jpg',
     productCount: 45,
+    visible: true,
   },
   {
     id: 'tops',
@@ -339,6 +374,7 @@ export const mockCategories: Category[] = [
     description: 'Premium blouses and shirts',
     image: '/src/assets/product-blouse-1.jpg',
     productCount: 67,
+    visible: true,
   },
   {
     id: 'outerwear',
@@ -346,6 +382,7 @@ export const mockCategories: Category[] = [
     description: 'Coats, blazers, and jackets',
     image: '/src/assets/product-coat-1.jpg',
     productCount: 32,
+    visible: true,
   },
   {
     id: 'accessories',
@@ -353,6 +390,7 @@ export const mockCategories: Category[] = [
     description: 'Scarves, bags, and jewelry',
     image: '/src/assets/product-dress-1.jpg',
     productCount: 89,
+    visible: true,
   },
   {
     id: 'bottoms',
@@ -360,6 +398,7 @@ export const mockCategories: Category[] = [
     description: 'Skirts, pants, and more',
     image: '/src/assets/product-dress-1.jpg',
     productCount: 34,
+    visible: true,
   },
   {
     id: 'shoes',
@@ -367,6 +406,7 @@ export const mockCategories: Category[] = [
     description: 'Elegant footwear collection',
     image: '/src/assets/product-coat-1.jpg',
     productCount: 28,
+    visible: false,
   },
 ];
 
@@ -377,17 +417,76 @@ export const mockUsers: User[] = [
     email: 'admin@luxe.com',
     name: 'Admin User',
     role: 'admin',
+    status: 'active',
   },
   {
     id: '2',
     email: 'jane.doe@example.com',
     name: 'Jane Doe',
     role: 'customer',
+    status: 'active',
     address: {
       street: '123 Fashion Ave',
       city: 'New York',
       country: 'USA',
       zipCode: '10001',
+    },
+  },
+];
+
+// Extended Mock Users
+export const extendedMockUsers: User[] = [
+  ...mockUsers,
+  {
+    id: '3',
+    email: 'sarah.miller@example.com',
+    name: 'Sarah Miller',
+    role: 'customer',
+    status: 'active',
+    address: {
+      street: '456 Style Street',
+      city: 'Los Angeles',
+      country: 'USA',
+      zipCode: '90210',
+    },
+  },
+  {
+    id: '4',
+    email: 'emma.johnson@example.com',
+    name: 'Emma Johnson',
+    role: 'customer',
+    status: 'inactive',
+    address: {
+      street: '789 Fashion Blvd',
+      city: 'Chicago',
+      country: 'USA',
+      zipCode: '60601',
+    },
+  },
+  {
+    id: '5',
+    email: 'lisa.chen@example.com',
+    name: 'Lisa Chen',
+    role: 'customer',
+    status: 'suspended',
+    address: {
+      street: '321 Design Ave',
+      city: 'San Francisco',
+      country: 'USA',
+      zipCode: '94102',
+    },
+  },
+  {
+    id: '6',
+    email: 'mike.johnson@example.com',
+    name: 'Mike Johnson',
+    role: 'customer',
+    status: 'pending',
+    address: {
+      street: '654 Trend Lane',
+      city: 'Miami',
+      country: 'USA',
+      zipCode: '33101',
     },
   },
 ];
@@ -467,6 +566,29 @@ export const mockOrders: Order[] = [
       zipCode: '60601',
     },
   },
+  {
+    id: 'ORD-004',
+    userId: '4',
+    items: [
+      {
+        productId: '5',
+        quantity: 1,
+        size: 'L',
+        color: 'Black',
+        price: 229,
+      },
+    ],
+    total: 229,
+    status: 'cancelled',
+    cancellationReason: 'Customer requested cancellation',
+    createdAt: '2024-01-22T08:30:00Z',
+    shippingAddress: {
+      street: '789 Fashion Blvd',
+      city: 'Chicago',
+      country: 'USA',
+      zipCode: '60601',
+    },
+  },
 ];
 
 // Mock Reviews
@@ -511,46 +633,15 @@ export const mockReviews: Review[] = [
     createdAt: '2024-01-14T16:45:00Z',
     status: 'pending',
   },
-];
-
-// Extended Mock Users
-export const extendedMockUsers: User[] = [
-  ...mockUsers,
   {
-    id: '3',
-    email: 'sarah.miller@example.com',
-    name: 'Sarah Miller',
-    role: 'customer',
-    address: {
-      street: '456 Style Street',
-      city: 'Los Angeles',
-      country: 'USA',
-      zipCode: '90210',
-    },
-  },
-  {
-    id: '4',
-    email: 'emma.johnson@example.com',
-    name: 'Emma Johnson',
-    role: 'customer',
-    address: {
-      street: '789 Fashion Blvd',
-      city: 'Chicago',
-      country: 'USA',
-      zipCode: '60601',
-    },
-  },
-  {
-    id: '5',
-    email: 'lisa.chen@example.com',
-    name: 'Lisa Chen',
-    role: 'customer',
-    address: {
-      street: '321 Design Ave',
-      city: 'San Francisco',
-      country: 'USA',
-      zipCode: '94102',
-    },
+    id: 'REV-005',
+    productId: '7',
+    userId: '6',
+    userName: 'Mike Johnson',
+    rating: 2,
+    comment: 'The dress material feels cheap for the price. Very disappointed.',
+    createdAt: '2024-01-23T14:20:00Z',
+    status: 'rejected',
   },
 ];
 
