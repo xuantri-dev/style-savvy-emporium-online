@@ -29,6 +29,15 @@ import UserManagement from "./pages/admin/UserManagement";
 import OrderManagement from "./pages/admin/OrderManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
+import Compare from "./pages/Compare";
+import Promotion from "./pages/Promotion";
+import Event from "./pages/Event";
+import BestSelling from "./pages/BestSelling";
+import HotProducts from "./pages/HotProducts";
+import Dresses from "./pages/categories/Dresses";
+import Tops from "./pages/categories/Tops";
+import Outerwear from "./pages/categories/Outerwear";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +68,17 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/promotion" element={<Promotion />} />
+          <Route path="/events" element={<Event />} />
+          <Route path="/best-selling" element={<BestSelling />} />
+          <Route path="/hot-products" element={<HotProducts />} />
+          
+          {/* Category Pages */}
+          <Route path="/categories/dresses" element={<Dresses />} />
+          <Route path="/categories/tops" element={<Tops />} />
+          <Route path="/categories/outerwear" element={<Outerwear />} />
           
           {/* Admin Pages */}
           <Route path="/admin" element={<AdminDashboard />} />
