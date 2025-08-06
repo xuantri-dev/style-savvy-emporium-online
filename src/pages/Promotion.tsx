@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Clock, Tag, Gift, Percent } from 'lucide-react';
 
 const promotions = [
@@ -81,12 +82,26 @@ const promotions = [
 ];
 
 const Promotion = () => {
-  const [filter, setFilter] = React.useState("All");
+  const [filter, setFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
   const categories = ["All", ...new Set(promotions.map(p => p.category))];
+  const PROMOTIONS_PER_PAGE = 6;
 
-  const filteredPromotions = filter === "All" 
-    ? promotions.filter(p => p.active)
-    : promotions.filter(p => p.category === filter && p.active);
+  const { filteredPromotions, paginatedPromotions, totalPages } = useMemo(() => {
+    const filtered = filter === "All" 
+      ? promotions.filter(p => p.active)
+      : promotions.filter(p => p.category === filter && p.active);
+    
+    const totalPages = Math.ceil(filtered.length / PROMOTIONS_PER_PAGE);
+    const startIndex = (currentPage - 1) * PROMOTIONS_PER_PAGE;
+    const paginated = filtered.slice(startIndex, startIndex + PROMOTIONS_PER_PAGE);
+    
+    return {
+      filteredPromotions: filtered,
+      paginatedPromotions: paginated,
+      totalPages
+    };
+  }, [filter, currentPage]);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -135,7 +150,7 @@ const Promotion = () => {
 
         {/* Promotions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filteredPromotions.map((promotion) => (
+          {paginatedPromotions.map((promotion) => (
             <Card key={promotion.id} className="group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden">
               {isExpiringSoon(promotion.expiryDate) && (
                 <Badge className="absolute top-4 right-4 z-10 bg-orange-500">
@@ -213,6 +228,44 @@ const Promotion = () => {
             </Card>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mb-12">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={page === currentPage}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
 
         {/* Promotion Features */}
         <div className="bg-muted rounded-lg p-8">

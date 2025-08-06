@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import ProductCard from '@/components/ProductCard';
 import { mockProducts } from '@/data/mockData';
@@ -12,18 +13,30 @@ import { mockProducts } from '@/data/mockData';
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [currentPage, setCurrentPage] = useState(1);
   const [recentSearches] = useState(['black dress', 'winter coat', 'silk blouse']);
+  const RESULTS_PER_PAGE = 12;
 
-  const searchResults = useMemo(() => {
-    if (!query.trim()) return [];
+  const { searchResults, paginatedResults, totalPages } = useMemo(() => {
+    if (!query.trim()) return { searchResults: [], paginatedResults: [], totalPages: 0 };
     
     const lowercaseQuery = query.toLowerCase();
-    return mockProducts.filter(product =>
+    const results = mockProducts.filter(product =>
       product.name.toLowerCase().includes(lowercaseQuery) ||
       product.description.toLowerCase().includes(lowercaseQuery) ||
       product.category.toLowerCase().includes(lowercaseQuery)
     );
-  }, [query]);
+    
+    const totalPages = Math.ceil(results.length / RESULTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * RESULTS_PER_PAGE;
+    const paginated = results.slice(startIndex, startIndex + RESULTS_PER_PAGE);
+    
+    return {
+      searchResults: results,
+      paginatedResults: paginated,
+      totalPages
+    };
+  }, [query, currentPage]);
 
   useEffect(() => {
     const q = searchParams.get('q');
@@ -34,6 +47,7 @@ const Search = () => {
 
   const handleSearch = (searchQuery: string) => {
     setQuery(searchQuery);
+    setCurrentPage(1); // Reset to first page when searching
     if (searchQuery.trim()) {
       setSearchParams({ q: searchQuery });
     } else {
@@ -107,15 +121,55 @@ const Search = () => {
             </div>
 
             {searchResults.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {searchResults.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    showDescription={true}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {paginatedResults.map((product) => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product} 
+                      showDescription={true}
+                    />
+                  ))}
+                </div>
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-12">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                        
+                        {[...Array(totalPages)].map((_, index) => {
+                          const page = index + 1;
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={page === currentPage}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">

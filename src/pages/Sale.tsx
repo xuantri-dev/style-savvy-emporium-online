@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import { getSaleProducts } from '@/data/mockData';
 
 const Sale = () => {
+  const [currentPage, setCurrentPage] = useState(1);
   const saleProducts = getSaleProducts();
+  const PRODUCTS_PER_PAGE = 9;
+
+  const { paginatedProducts, totalPages } = useMemo(() => {
+    const totalPages = Math.ceil(saleProducts.length / PRODUCTS_PER_PAGE);
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const paginated = saleProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+    
+    return {
+      paginatedProducts: paginated,
+      totalPages
+    };
+  }, [saleProducts, currentPage]);
 
   return (
     <Layout>
@@ -42,7 +56,7 @@ const Sale = () => {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {saleProducts.map((product) => (
+          {paginatedProducts.map((product) => (
             <Link key={product.id} to={`/product/${product.id}`} className="product-card">
               <Card className="border-0 shadow-none">
                 <CardContent className="p-0">
@@ -103,6 +117,44 @@ const Sale = () => {
             <Button asChild variant="outline" className="mt-4">
               <Link to="/shop">Browse All Products</Link>
             </Button>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-12 mb-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+                
+                {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(page)}
+                        isActive={page === currentPage}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
 

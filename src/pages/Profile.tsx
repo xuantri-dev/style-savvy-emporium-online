@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { User, MapPin, CreditCard, Package, Heart, Settings } from 'lucide-react';
+import { User, MapPin, CreditCard, Package, Settings, Calendar, Truck, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import Layout from '@/components/Layout';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,6 +24,38 @@ const Profile = () => {
     country: 'United States',
     zipCode: '10001',
   });
+
+  // Mock order data
+  const orders = [
+    {
+      id: 'ORD-001',
+      date: '2024-01-15',
+      status: 'Delivered',
+      total: 245.99,
+      items: [
+        { name: 'Elegant Evening Dress', quantity: 1, price: 199.99 },
+        { name: 'Silver Necklace', quantity: 1, price: 45.99 }
+      ]
+    },
+    {
+      id: 'ORD-002',
+      date: '2024-01-28',
+      status: 'In Transit',
+      total: 89.99,
+      items: [
+        { name: 'Casual Denim Jacket', quantity: 1, price: 89.99 }
+      ]
+    },
+    {
+      id: 'ORD-003',
+      date: '2024-02-05',
+      status: 'Processing',
+      total: 156.98,
+      items: [
+        { name: 'Designer Blouse', quantity: 2, price: 78.49 }
+      ]
+    }
+  ];
 
   const handleSaveProfile = () => {
     toast({
@@ -54,7 +87,7 @@ const Profile = () => {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -66,10 +99,6 @@ const Profile = () => {
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Orders
-            </TabsTrigger>
-            <TabsTrigger value="wishlist" className="flex items-center gap-2">
-              <Heart className="h-4 w-4" />
-              Wishlist
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -163,26 +192,43 @@ const Profile = () => {
           <TabsContent value="orders">
             <Card>
               <CardHeader>
-                <CardTitle>Recent Orders</CardTitle>
+                <CardTitle>Order History</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-8">
-                  <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No recent orders</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="wishlist">
-            <Card>
-              <CardHeader>
-                <CardTitle>Wishlist</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Heart className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">Your wishlist is empty</p>
+                <div className="space-y-4">
+                  {orders.map((order) => (
+                    <Card key={order.id} className="p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <p className="font-medium">Order #{order.id}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(order.date).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant={
+                            order.status === 'Delivered' ? 'default' :
+                            order.status === 'In Transit' ? 'secondary' : 'outline'
+                          }>
+                            {order.status === 'In Transit' && <Truck className="h-3 w-3 mr-1" />}
+                            {order.status}
+                          </Badge>
+                          <p className="text-lg font-semibold mt-1">${order.total}</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        {order.items.map((item, index) => (
+                          <div key={index} className="flex justify-between text-sm">
+                            <span>{item.name} x{item.quantity}</span>
+                            <span>${item.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  ))}
                 </div>
               </CardContent>
             </Card>
