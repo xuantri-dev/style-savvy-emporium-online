@@ -4,12 +4,15 @@ import ProductCard from '@/components/ProductCard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Flame, Clock, Zap, Eye } from 'lucide-react';
 import { mockProducts } from '@/data/mockData';
 
 const HotProducts = () => {
   const [sortBy, setSortBy] = React.useState('trending');
   const [filterCategory, setFilterCategory] = React.useState('all');
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const productsPerPage = 12;
 
   // Create hot products with trending scores
   const hotProducts = mockProducts
@@ -48,6 +51,15 @@ const HotProducts = () => {
         return b.trendingScore - a.trendingScore;
     }
   });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy, filterCategory]);
 
   const getHotIcon = (level: string) => {
     switch (level) {
@@ -148,8 +160,8 @@ const HotProducts = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-          {sortedProducts.map((product, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {currentProducts.map((product, index) => (
             <div key={product.id} className="relative">
               {/* Hot Level Badge */}
               <Badge 
@@ -195,6 +207,41 @@ const HotProducts = () => {
             </div>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination className="mb-12">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); setCurrentPage(Math.max(1, currentPage - 1)); }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); setCurrentPage(page); }}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); setCurrentPage(Math.min(totalPages, currentPage + 1)); }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
 
         {/* Hot Categories */}
         <div className="bg-muted rounded-lg p-8">

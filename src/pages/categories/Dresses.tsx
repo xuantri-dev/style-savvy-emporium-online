@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { getProductsByCategory } from '@/data/mockData';
 
 const Dresses = () => {
@@ -12,6 +13,8 @@ const Dresses = () => {
   const [priceRange, setPriceRange] = React.useState([0, 500]);
   const [selectedSizes, setSelectedSizes] = React.useState<string[]>([]);
   const [selectedColors, setSelectedColors] = React.useState<string[]>([]);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const productsPerPage = 9;
 
   const dressProducts = getProductsByCategory('dresses');
   
@@ -43,6 +46,15 @@ const Dresses = () => {
         return Number(b.featured) - Number(a.featured);
     }
   });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const currentProducts = sortedProducts.slice(startIndex, startIndex + productsPerPage);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy, priceRange, selectedSizes, selectedColors]);
 
   const toggleSize = (size: string) => {
     setSelectedSizes(prev => 
@@ -149,7 +161,7 @@ const Dresses = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <div>
                 <p className="text-muted-foreground">
-                  Showing {sortedProducts.length} of {dressProducts.length} products
+                  Showing {startIndex + 1}-{Math.min(startIndex + productsPerPage, sortedProducts.length)} of {sortedProducts.length} products
                 </p>
               </div>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -167,11 +179,46 @@ const Dresses = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedProducts.map(product => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {currentProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination className="mb-8">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#" 
+                      onClick={(e) => { e.preventDefault(); setCurrentPage(Math.max(1, currentPage - 1)); }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => { e.preventDefault(); setCurrentPage(page); }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#" 
+                      onClick={(e) => { e.preventDefault(); setCurrentPage(Math.min(totalPages, currentPage + 1)); }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
 
             {/* No Products Message */}
             {sortedProducts.length === 0 && (

@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { CalendarDays, User, ArrowRight } from 'lucide-react';
 
 const blogPosts = [
@@ -72,10 +73,20 @@ const categories = ["All", "Fashion Trends", "Style Guide", "Sustainability", "S
 
 const Blog = () => {
   const [selectedCategory, setSelectedCategory] = React.useState("All");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const postsPerPage = 6;
 
   const filteredPosts = selectedCategory === "All" 
     ? blogPosts 
     : blogPosts.filter(post => post.category === selectedCategory);
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory]);
 
   return (
     <Layout>
@@ -103,8 +114,8 @@ const Blog = () => {
         </div>
 
         {/* Blog Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {currentPosts.map((post) => (
             <Card key={post.id} className="group hover:shadow-lg transition-shadow duration-300">
               <div className="aspect-video overflow-hidden rounded-t-lg">
                 <img
@@ -143,6 +154,41 @@ const Blog = () => {
             </Card>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination className="mb-8">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); setCurrentPage(Math.max(1, currentPage - 1)); }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); setCurrentPage(page); }}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  href="#" 
+                  onClick={(e) => { e.preventDefault(); setCurrentPage(Math.min(totalPages, currentPage + 1)); }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
 
         {/* Newsletter Signup */}
         <div className="mt-16 bg-muted rounded-lg p-8 text-center">

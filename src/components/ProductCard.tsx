@@ -73,7 +73,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   </Button>
                 </div>
               </div>
-              <div className="flex-1 py-2">
+              <div className="flex-1 py-2 pl-2">
                 <h3 className="product-title mb-2">{product.name}</h3>
                 <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                   {product.description}
@@ -145,7 +145,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </Button>
             </div>
           </div>
-          <div className="pt-4">
+          <div className="pt-4 pl-2">
             <h3 className="product-title mb-2">{product.name}</h3>
             {showDescription && (
               <p className="text-sm text-muted-foreground mb-2 line-clamp-2">

@@ -4,6 +4,7 @@ import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import { mockProducts } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +18,8 @@ interface CartItem {
 
 const Cart = () => {
   const { toast } = useToast();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       productId: '1',
@@ -61,6 +64,10 @@ const Cart = () => {
   };
 
   const cartItemsWithProducts = getCartItemsWithProducts();
+  const totalPages = Math.ceil(cartItemsWithProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = cartItemsWithProducts.slice(startIndex, startIndex + itemsPerPage);
+  
   const subtotal = cartItemsWithProducts.reduce((sum, item) => sum + (item.product!.price * item.quantity), 0);
   const shipping = subtotal > 100 ? 0 : 15;
   const tax = subtotal * 0.08; // 8% tax
@@ -93,7 +100,7 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-6">
-            {cartItemsWithProducts.map((item) => (
+            {currentItems.map((item) => (
               <Card key={`${item.productId}-${item.size}-${item.color}`}>
                 <CardContent className="p-6">
                   <div className="flex gap-4">
@@ -154,6 +161,41 @@ const Cart = () => {
                 </CardContent>
               </Card>
             ))}
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#" 
+                      onClick={(e) => { e.preventDefault(); setCurrentPage(Math.max(1, currentPage - 1)); }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => { e.preventDefault(); setCurrentPage(page); }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#" 
+                      onClick={(e) => { e.preventDefault(); setCurrentPage(Math.min(totalPages, currentPage + 1)); }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
 
           {/* Order Summary */}
