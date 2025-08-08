@@ -35,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   if (viewMode === 'list') {
     return (
-      <Link to={`/product/${product.id}`} className={`product-card ${className}`}>
+      <Link to={`/product/${product.id}`} className={`product-card ${className} mb-6`}>
         <Card className="border-0 shadow-none">
           <CardContent className="p-0">
             <div className="flex gap-4">

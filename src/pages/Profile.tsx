@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { User, Package, Settings, Calendar, Truck, Star, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import Layout from '@/components/Layout';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -52,8 +53,60 @@ const Profile = () => {
       items: [
         { name: 'Designer Blouse', quantity: 2, price: 78.49 }
       ]
+    },
+    {
+      id: 'ORD-004',
+      date: '2024-02-12',
+      status: 'Delivered',
+      total: 324.50,
+      items: [
+        { name: 'Leather Handbag', quantity: 1, price: 249.99 },
+        { name: 'Silk Scarf', quantity: 1, price: 74.51 }
+      ]
+    },
+    {
+      id: 'ORD-005',
+      date: '2024-02-18',
+      status: 'Processing',
+      total: 129.99,
+      items: [
+        { name: 'Wool Sweater', quantity: 1, price: 129.99 }
+      ]
+    },
+    {
+      id: 'ORD-006',
+      date: '2024-02-25',
+      status: 'In Transit',
+      total: 199.99,
+      items: [
+        { name: 'Designer Jeans', quantity: 1, price: 199.99 }
+      ]
+    },
+    {
+      id: 'ORD-007',
+      date: '2024-03-02',
+      status: 'Delivered',
+      total: 89.99,
+      items: [
+        { name: 'Cotton T-Shirt', quantity: 2, price: 44.99 }
+      ]
     }
   ];
+
+  // Order pagination
+  const [currentOrderPage, setCurrentOrderPage] = useState(1);
+  const ORDERS_PER_PAGE = 3;
+  
+  const { paginatedOrders, totalOrderPages } = useMemo(() => {
+    const startIndex = (currentOrderPage - 1) * ORDERS_PER_PAGE;
+    const paginatedOrders = orders.slice(startIndex, startIndex + ORDERS_PER_PAGE);
+    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    
+    return {
+      paginatedOrders,
+      totalOrderPages: totalPages
+    };
+  }, [currentOrderPage, orders]);
 
   const handleSaveProfile = () => {
     toast({
@@ -175,7 +228,7 @@ const Profile = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {orders.map((order) => (
+                  {paginatedOrders.map((order) => (
                     <Card key={order.id} className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-4">
@@ -216,6 +269,44 @@ const Profile = () => {
                     </Card>
                   ))}
                 </div>
+                
+                {/* Order Pagination */}
+                {totalOrderPages > 1 && (
+                  <div className="flex justify-center mt-6">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setCurrentOrderPage(Math.max(1, currentOrderPage - 1))}
+                            className={currentOrderPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                        
+                        {[...Array(totalOrderPages)].map((_, index) => {
+                          const page = index + 1;
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentOrderPage(page)}
+                                isActive={page === currentOrderPage}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        })}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setCurrentOrderPage(Math.min(totalOrderPages, currentOrderPage + 1))}
+                            className={currentOrderPage === totalOrderPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
