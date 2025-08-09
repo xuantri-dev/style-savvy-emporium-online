@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -244,15 +245,23 @@ const ProductManagement = () => {
               </div>
             ) : modalState.type === 'view' && selectedProduct ? (
               <div className="py-4 space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
-                    <img
-                      src={selectedProduct.images[0]}
-                      alt={selectedProduct.name}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
+                    <Label className="text-sm font-medium">Product Images</Label>
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      {selectedProduct.images.slice(0, 2).map((image, index) => (
+                        <div key={index}>
+                          <img
+                            src={image}
+                            alt={`${selectedProduct.name} - Image ${index + 1}`}
+                            className="w-full h-48 object-cover rounded-lg"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1 text-center">Image {index + 1}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="text-sm font-medium">Product Name</Label>
                       <p className="text-sm text-muted-foreground">{selectedProduct.name}</p>
@@ -270,10 +279,24 @@ const ProductManagement = () => {
                       <p className="text-sm text-muted-foreground">{selectedProduct.rating} ({selectedProduct.reviews} reviews)</p>
                     </div>
                   </div>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">Description</Label>
-                  <p className="text-sm text-muted-foreground mt-1">{selectedProduct.description}</p>
+                  <div>
+                    <Label className="text-sm font-medium">Status & Visibility</Label>
+                    <div className="flex gap-4 mt-2">
+                      <Badge variant={selectedProduct.visible ? 'default' : 'secondary'}>
+                        {selectedProduct.visible ? 'Visible' : 'Hidden'}
+                      </Badge>
+                      {selectedProduct.featured && (
+                        <Badge variant="secondary">Featured</Badge>
+                      )}
+                      {selectedProduct.onSale && (
+                        <Badge variant="outline">On Sale</Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Description</Label>
+                    <p className="text-sm text-muted-foreground mt-1">{selectedProduct.description}</p>
+                  </div>
                 </div>
               </div>
             ) : (modalState.type === 'add' || modalState.type === 'edit') ? (
@@ -312,9 +335,60 @@ const ProductManagement = () => {
                   <Label htmlFor="description">Description</Label>
                   <Textarea id="description" defaultValue={selectedProduct?.description || ''} />
                 </div>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Product Images</Label>
+                    <div className="space-y-3 mt-2">
+                      <div>
+                        <Label htmlFor="image1" className="text-sm">Image 1 URL</Label>
+                        <Input 
+                          id="image1" 
+                          placeholder="Enter first image URL" 
+                          defaultValue={selectedProduct?.images[0] || ''} 
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="image2" className="text-sm">Image 2 URL</Label>
+                        <Input 
+                          id="image2" 
+                          placeholder="Enter second image URL" 
+                          defaultValue={selectedProduct?.images[1] || ''} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div>
-                  <Label htmlFor="images">Image URLs</Label>
-                  <Input id="images" placeholder="Enter image URLs separated by commas" />
+                  <Label className="text-base font-medium">Product Settings</Label>
+                  <div className="grid grid-cols-1 gap-4 mt-3">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="visible" 
+                        defaultChecked={selectedProduct?.visible !== false} 
+                      />
+                      <Label htmlFor="visible" className="text-sm font-normal">
+                        Product is visible to customers
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="featured" 
+                        defaultChecked={selectedProduct?.featured || false} 
+                      />
+                      <Label htmlFor="featured" className="text-sm font-normal">
+                        Featured product
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="onSale" 
+                        defaultChecked={selectedProduct?.onSale || false} 
+                      />
+                      <Label htmlFor="onSale" className="text-sm font-normal">
+                        Product is on sale
+                      </Label>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : null}
