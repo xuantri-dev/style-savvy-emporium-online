@@ -278,6 +278,10 @@ const ProductManagement = () => {
                       <Label className="text-sm font-medium">Rating</Label>
                       <p className="text-sm text-muted-foreground">{selectedProduct.rating} ({selectedProduct.reviews} reviews)</p>
                     </div>
+                    <div>
+                      <Label className="text-sm font-medium">Stock Quantity</Label>
+                      <p className="text-sm text-muted-foreground">{selectedProduct.stockCount} units</p>
+                    </div>
                   </div>
                   <div>
                     <Label className="text-sm font-medium">Status & Visibility</Label>
@@ -321,7 +325,7 @@ const ProductManagement = () => {
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label htmlFor="price">Price</Label>
                     <Input id="price" type="number" defaultValue={selectedProduct?.price || ''} />
@@ -329,6 +333,10 @@ const ProductManagement = () => {
                   <div>
                     <Label htmlFor="originalPrice">Original Price</Label>
                     <Input id="originalPrice" type="number" defaultValue={selectedProduct?.originalPrice || ''} />
+                  </div>
+                  <div>
+                    <Label htmlFor="quantity">Quantity</Label>
+                    <Input id="quantity" type="number" defaultValue={selectedProduct?.stockCount || ''} />
                   </div>
                 </div>
                 <div>
