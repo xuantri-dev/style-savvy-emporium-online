@@ -99,7 +99,6 @@ const Register = () => {
                     placeholder="Enter your full name"
                     value={registerForm.name}
                     onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })}
-                    required
                   />
                 </div>
                 
@@ -111,7 +110,6 @@ const Register = () => {
                     placeholder="Enter your email"
                     value={registerForm.email}
                     onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
-                    required
                   />
                 </div>
                 
@@ -124,7 +122,6 @@ const Register = () => {
                       placeholder="Create a password"
                       value={registerForm.password}
                       onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
-                      required
                     />
                     <Button
                       type="button"
@@ -146,7 +143,6 @@ const Register = () => {
                     placeholder="Confirm your password"
                     value={registerForm.confirmPassword}
                     onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
-                    required
                   />
                 </div>
                 

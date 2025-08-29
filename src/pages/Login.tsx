@@ -70,7 +70,6 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={loginForm.email}
                     onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                    required
                   />
                 </div>
                 
@@ -83,7 +82,6 @@ const Login = () => {
                       placeholder="Enter your password"
                       value={loginForm.password}
                       onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                      required
                     />
                     <Button
                       type="button"
