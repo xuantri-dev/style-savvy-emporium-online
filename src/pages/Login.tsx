@@ -18,6 +18,26 @@ const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate empty fields
+    if (!loginForm.email.trim()) {
+      toast({
+        title: 'Email required',
+        description: 'Please enter your email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!loginForm.password.trim()) {
+      toast({
+        title: 'Password required',
+        description: 'Please enter your password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     toast({
       title: 'Login successful',
       description: 'Welcome back!',

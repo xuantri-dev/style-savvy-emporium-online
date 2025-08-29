@@ -20,6 +20,44 @@ const Register = () => {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate empty fields
+    if (!registerForm.name.trim()) {
+      toast({
+        title: 'Name required',
+        description: 'Please enter your full name.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!registerForm.email.trim()) {
+      toast({
+        title: 'Email required',
+        description: 'Please enter your email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!registerForm.password.trim()) {
+      toast({
+        title: 'Password required',
+        description: 'Please create a password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!registerForm.confirmPassword.trim()) {
+      toast({
+        title: 'Password confirmation required',
+        description: 'Please confirm your password.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     if (registerForm.password !== registerForm.confirmPassword) {
       toast({
         title: 'Passwords do not match',
@@ -28,6 +66,7 @@ const Register = () => {
       });
       return;
     }
+    
     toast({
       title: 'Account created',
       description: 'Your account has been created successfully!',
